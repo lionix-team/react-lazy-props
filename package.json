@@ -1,0 +1,45 @@
+{
+  "name": "react-lazy-props",
+  "version": "1.0.0",
+  "description": "Lazyload component props with IntersectionObserver API",
+  "main": "dist/index.js",
+  "scripts": {
+    "prepublishOnly": "babel ./src --out-dir ./dist -s inline"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lionix-team/react-lazy-props"
+  },
+  "keywords": [
+    "react",
+    "reactjs",
+    "props",
+    "lazy",
+    "lazyload",
+    "viewport",
+    "observer",
+    "media"
+  ],
+  "peerDependencies": {
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.4.4",
+    "@babel/core": "^7.4.5",
+    "@babel/plugin-proposal-class-properties": "^7.4.4",
+    "@babel/preset-env": "^7.4.5",
+    "@babel/preset-react": "^7.0.0"
+  },
+  "contributors": [
+    {
+      "name": "Lionix Team",
+      "email": "packages@lionix-team.com"
+    },
+    {
+      "name": "Stas Vartanyan",
+      "email": "vaawebdev@gmail.com"
+    }
+  ],
+  "license": "MIT"
+}
