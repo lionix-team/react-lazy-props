@@ -1,6 +1,6 @@
 {
   "name": "react-lazy-props",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Lazyload component props with IntersectionObserver API",
   "main": "dist/index.js",
   "scripts": {

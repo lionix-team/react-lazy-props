@@ -1,8 +1,7 @@
 import { map as attributesMap } from './map';
 
-export const isLazy = reactElement => {
+export const isLazy = elementProps => {
     let toReturn = false;
-    let elementProps = reactElement.props;
     if(elementProps){
         toReturn = Object.keys(attributesMap).some(key => {
             return elementProps[key];

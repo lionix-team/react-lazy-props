@@ -1,8 +1,7 @@
 import { map as stylesMap } from './map';
 
-export const isLazy = reactElement => {
+export const isLazy = elementProps => {
     let toReturn = false;
-    let elementProps = reactElement.props;
     if(elementProps && elementProps.style){
         toReturn = Object.keys(stylesMap).some(key => {
             return elementProps.style[key];

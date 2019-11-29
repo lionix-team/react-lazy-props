@@ -25,7 +25,7 @@ return (
   <div>
    <h2 style={{backgroundImage: `url("${backgroundImage}")`}}>Title</h2>
    <p>Some Images</p>
-   <img src="example.jpg" srcSet={"example2x.jpg" 2x, "example3x.jpg" 3x} />
+   <img src="example.jpg" srcSet={"example2x.jpg 2x", "example3x.jpg 3x"} />
    <video src="https://www.example.com/video.ogg" />
   </div>
  </LazyProps>

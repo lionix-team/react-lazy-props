@@ -1,45 +1,25 @@
 import React from "react";
 import { findDOMNode } from "react-dom";
 import Observer from "../modules/observer";
-import { compose } from "../modules/compose";
-import { 
-    isLazy as hasLazyAttributes, 
-    unload as unloadAttributes, 
-    load as loadAttributes
-} from "../modules/loader/attributes";
-import { 
-    isLazy as hasLazyStyles,
-    unload as unloadStyles,
-    load as loadStyles
-} from "../modules/loader/styles";
+import { isLazy as hasLazyProps, unload as unloadComponentProps, load as loadElementAttributes } from "../modules/loader";
+import componentIterator from '../modules/iterator';
 
 class LazyProps extends React.Component {
+    
+    /**
+     * State:
+     * - Observer instance
+     * - Actions to be invoked
+     * 
+     * @var {Object} state
+     */
     constructor(props){
         super(props);
         this.state = {
             observer: new Observer(),
-            actions: {
-                onElementLoad: [
-                    loadAttributes, loadStyles
-                ],
-                onUnloadProps: [
-                    unloadStyles, unloadAttributes
-                ]
-            }
+            onElementLoad: loadElementAttributes,
+            onUnloadProps: unloadComponentProps
         }
-    }
-
-    componentDidMount = () => {
-        this.observeElements();
-    }
-
-    componentDidUpdate = () => {
-        this.state.observer.endobserve();
-        this.observeElements();
-    }
-
-    componentWillUnmount = () => {
-        this.state.observer.endobserve();
     }
 
     /**
@@ -76,64 +56,15 @@ class LazyProps extends React.Component {
     /**
      * Method to rewrite child components by unloading their props
      * 
-     * @param {Array} children
-     * 
      * @return {Array}
      */ 
-    unloadChildComponents = (children = this.props.children) => {
+    unloadChildComponents = () => {
+        let toReturn = this.props.children;
         if(!this.getProp('unloaded')){
-            return React.Children.map(children, ReactElement => {
-                return this.unloadComponent(ReactElement);
-            });
-        } else {
-            return children;
+            toReturn = componentIterator(this.props.children, this.unloadComponentProps);
         }
-    }
-
-    /**
-     * Function to unload component props. Also check for
-     * child components and call getChildComponents method recursively
-     * 
-     * @param {React.Component} reactElement
-     * 
-     * @return {React.Component}
-     */
-    unloadComponent = (reactComponent) => {
-        let [
-            isValid,
-            childElemets,
-            mustBeLazyLoaded,
-            props
-        ] = [
-            React.isValidElement(reactComponent) ,
-            reactComponent.props ? reactComponent.props.children : false,
-            this.componentMustLazyLoad(reactComponent),
-            reactComponent.props
-        ];
-        if(isValid){
-            if(mustBeLazyLoaded){
-                props = this.unloadComponentProps(reactComponent);
-            }
-            if(childElemets){
-                childElemets = this.unloadChildComponents(childElemets);
-            }
-            if(mustBeLazyLoaded || childElemets){
-                return React.cloneElement(reactComponent, props, childElemets);
-            }
-        }
-        return reactComponent;
-    }
-
-    /**
-     * Method to check if element must be lazyLoaded
-     * 
-     * @param {React.Component} reactElement
-     * 
-     * @return {boolean}
-     */
-    componentMustLazyLoad = reactElement => ((
-        (hasLazyAttributes(reactElement) || hasLazyStyles(reactElement))
-    ));
+        return toReturn;
+    };
     
     /**
      * Function combining unloadStyles and unloadAttributes,
@@ -141,11 +72,16 @@ class LazyProps extends React.Component {
      * 
      * @param {Array} props
      * 
-     * @return {Array}
+     * @return {Array|undefined}
      */
-    unloadComponentProps = reactComponent => {
-        let writableProps = { ...reactComponent.props };
-        return this.getProp("onUnloadProps")(compose(...this.state.actions.onUnloadProps)(writableProps), reactComponent.type);
+    unloadComponentProps = (props, reactElement) => {
+        if(hasLazyProps(props)){
+            let unloadedProps = this.state.onUnloadProps(props);
+            let userActionResult = this.getProp("onUnloadProps")(unloadedProps, reactElement.type);
+            if(userActionResult instanceof Object){
+                return { ...unloadedProps, ...userActionResult };
+            }
+        }
     };
 
     /**
@@ -155,7 +91,20 @@ class LazyProps extends React.Component {
      */
     loadElement = (element) => {
         this.state.observer.unobserve(element);
-        this.getProp("onElementLoad")(compose(...this.state.actions.onElementLoad)(element.target));
+        this.getProp("onElementLoad")(this.state.onElementLoad(element.target));
+    }
+
+    componentDidMount = () => {
+        this.observeElements();
+    }
+
+    componentDidUpdate = () => {
+        this.state.observer.endobserve();
+        this.observeElements();
+    }
+
+    componentWillUnmount = () => {
+        this.state.observer.endobserve();
     }
 
     render(){
