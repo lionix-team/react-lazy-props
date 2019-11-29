@@ -148,7 +148,7 @@ return (
 
 
 ## IntersectionObserver polyfill
-Since this package is observing elements with `IntersectionObserver`, if may want old browsers to support it with [IntersectionObserver polyfill](https://www.npmjs.com/package/intersection-observer)
+Since this package is observing elements with `IntersectionObserver`, you may want old browsers to support it with [IntersectionObserver polyfill](https://www.npmjs.com/package/intersection-observer)
 
 
 ## Credits

@@ -72,7 +72,7 @@ class LazyProps extends React.Component {
      * 
      * @param {Array} props
      * 
-     * @return {Array|undefined}
+     * @return {Array}
      */
     unloadComponentProps = (props, reactElement) => {
         if(hasLazyProps(props)){
@@ -81,7 +81,9 @@ class LazyProps extends React.Component {
             if(userActionResult instanceof Object){
                 return { ...unloadedProps, ...userActionResult };
             }
+            return unloadedProps;
         }
+        return props;
     };
 
     /**
